@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../status_bar/status_bar.dart';
 import '../custom_btn/next_btn.dart';
 import '../strings/strings.dart';
-import 'package:wan_protector/get_started/get_started_1.dart';
+//import 'package:wan_protector/get_started/get_started_1.dart';
+import '../auth/register_screen.dart';
 
 class GetStarted3 extends StatelessWidget {
   const GetStarted3({super.key});
@@ -75,8 +76,8 @@ class GetStarted3 extends StatelessWidget {
                       Navigator.push(
                         context,
                           MaterialPageRoute(
-                            builder: (context) => GetStarted1()
-                          )
+                            builder: (context) => const RegisterScreen(),
+                          ),
                       );
                     },
                     child: setTextStyle_3(),

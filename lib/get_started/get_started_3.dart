@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import '../status_bar/status_bar.dart';
-import '../strings/strings.dart';
 import '../custom_btn/next_btn.dart';
-import 'get_started_3.dart';
+import '../strings/strings.dart';
+import 'package:wan_protector/get_started/get_started_1.dart';
 
-class GetStarted2 extends StatelessWidget {
-  const GetStarted2({super.key});
+class GetStarted3 extends StatelessWidget {
+  const GetStarted3({super.key});
 
   @override
   Widget build(BuildContext context) {
+    
 
     //Set the status bar icons to white
     setStatusBarStyle();
@@ -33,7 +34,7 @@ class GetStarted2 extends StatelessWidget {
             left: 40.0,
             right: 20.0,
             child: Center(
-              child: Text(Strings.get_started_2_title,
+              child: Text(Strings.get_started_3_title,
                 style: TextStyle(
                   fontSize: 30.0,
                   fontWeight: FontWeight.bold,
@@ -49,7 +50,7 @@ class GetStarted2 extends StatelessWidget {
             //right: 40.0,
             width: 320.0,
             child: Center(
-              child: Text(Strings.get_started_2,
+              child: Text(Strings.get_started_3,
                 textAlign: TextAlign.justify,
                 style: TextStyle(
                   fontSize: 18.0,
@@ -74,17 +75,17 @@ class GetStarted2 extends StatelessWidget {
                       Navigator.push(
                         context,
                           MaterialPageRoute(
-                            builder: (context) => GetStarted3()
+                            builder: (context) => GetStarted1()
                           )
                       );
                     },
-                    child: setTextStyle_2(),
+                    child: setTextStyle_3(),
                   ),
               ),
             ),
           ),
         ],
-      )
+      ),
     );
   }
 }

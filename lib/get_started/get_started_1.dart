@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../strings/strings.dart';
 import '../status_bar/status_bar.dart';
+import '../custom_btn/next_btn.dart';
 import 'get_started_2.dart';
 
 class GetStarted1 extends StatelessWidget{
@@ -46,9 +46,10 @@ class GetStarted1 extends StatelessWidget{
 
           //Text
           Positioned(
-            bottom: 300.0,
-            left: 35.0,
-            right: 30.0,
+            bottom: 275.0,
+            left: 42.0,
+            //right: 40.0,
+            width: 320.0,
             child: Center(
               child: Text(Strings.get_started_1,
                 textAlign: TextAlign.justify,
@@ -70,10 +71,7 @@ class GetStarted1 extends StatelessWidget{
                 width: 200.0,
                 height: 60.0,
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 98, 100, 100),
-                      foregroundColor: Colors.white,
-                    ),
+                    style: setNextBtnStyle(),
                     onPressed: () {
                       Navigator.push(
                       context,
@@ -82,12 +80,7 @@ class GetStarted1 extends StatelessWidget{
                         )
                       );
                     },
-                    child: Text(
-                    'Next',
-                    style: TextStyle(
-                      fontSize: 20.0
-                    ),
-                  ),
+                    child: setTextStyle_1(),
                 ),
               ),
             ),

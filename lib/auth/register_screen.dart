@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../get_started/get_started_3.dart';
+import '../custom_btn/login_register_btn.dart';
 
 class RegisterScreen extends StatefulWidget{
     const RegisterScreen({super.key});
@@ -118,22 +119,27 @@ class RegisterScreenState extends State<RegisterScreen> {
 
                 //Submit button
                 const SizedBox(height: 16),
-                ElevatedButton(
-                    onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Registration Successful')),
-                        );
-                        // Navigate to the other page
-                        Navigator.push(
-                            context,
-                        MaterialPageRoute(
-                            builder: (context) => const GetStarted3(),
-                            ),
-                            );
-                        }
-                    },
-                        child: const Text('Submit'),
+                SizedBox(
+                    width: double.infinity,
+                    height: 45.0,
+                        child: ElevatedButton(
+                            style: registerButtonStyle,
+                            onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Registration Successful')),
+                                );
+                                // Navigate to the other page
+                                Navigator.push(
+                                    context,
+                                MaterialPageRoute(
+                                    builder: (context) => const GetStarted3(),
+                                    ),
+                                    );
+                                }
+                            },
+                            child: const Text('Submit'),
+                        ),
                     ),
                   ],
                 ),

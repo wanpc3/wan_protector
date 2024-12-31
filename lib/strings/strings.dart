@@ -1,5 +1,11 @@
 class Strings {
   //Description about the app
+
+  //Starter Page
+  static const String welcome_to_wp = 'Welcome to WanProtector\nPassword Manager!';
+  static const String welcome_1 = 'Passwords are sensitive information that must be securely protected to prevent unauthorized access or theft.';
+  static const String tap_anywhere = 'Tap anywhere to begin';
+
   //First page
   static const String get_started_1_title = 'It is time to secure your account';
   static const String get_started_1 = 'WanProtector keeps your passwords safe, securely and easily wherever you go.';

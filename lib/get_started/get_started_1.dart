@@ -5,7 +5,7 @@ import '../custom_btn/next_btn.dart';
 import 'get_started_2.dart';
 
 class GetStarted1 extends StatelessWidget{
-  GetStarted1({super.key});
+  const GetStarted1({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +67,7 @@ class GetStarted1 extends StatelessWidget{
             left: 0,
             right: 0,
             child: Center(
-              child: Container(
+              child: SizedBox(
                 width: 200.0,
                 height: 60.0,
                   child: ElevatedButton(

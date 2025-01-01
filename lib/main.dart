@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'get_started/starter_page.dart';
 
 void main() {
+  //Initialize FFI for desktop or test env
+  sqfliteFfiInit();
+  databaseFactory = databaseFactoryFfi;
+
   runApp(const MyApp());
 }
 

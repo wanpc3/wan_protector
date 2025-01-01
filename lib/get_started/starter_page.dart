@@ -3,6 +3,8 @@ import '../strings/strings.dart';
 import 'get_started_1.dart';
 
 class StarterPage extends StatelessWidget{
+  const StarterPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

@@ -9,14 +9,14 @@ class WPUser {
 
   Map<String, dynamic> toMap() {
     return {
-      'userNo': userNo,
+      'user_no': userNo,
       'email': email,
     };
   }
 
   factory WPUser.fromMap(Map<String, dynamic> map) {
     return WPUser(
-      userNo: map['userNo'] as int?,
+      userNo: map['user_no'] as int?,
       email: map['email'] as String,
     );
   }

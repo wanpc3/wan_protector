@@ -13,16 +13,16 @@ class MasterPswd {
 
   Map<String, dynamic> toMap() {
     return {
-      'masterPswdNo': masterPswdNo,
-      'masterPswdText': EncryptionHelper.encryptText(masterPswdText), //Encrypt before saving
-      'userNo': userNo,
+      'master_pswd_no': masterPswdNo,
+      'master_pswd_text': EncryptionHelper.encryptText(masterPswdText), //Encrypt before saving
+      'user_no': userNo,
     };
   }
 
   factory MasterPswd.fromMap(Map<String, dynamic> map) {
     return MasterPswd(
-      masterPswdNo: map['masterPswdNo'] as int?,
-      masterPswdText: EncryptionHelper.decryptText(map['masterPswdText'] as String), //Decrypt when reading
+      masterPswdNo: map['master_pswd_no'] as int?,
+      masterPswdText: EncryptionHelper.decryptText(map['master_pswd_text'] as String), //Decrypt when reading
       userNo: map['userNo'] as int,
     );
   }

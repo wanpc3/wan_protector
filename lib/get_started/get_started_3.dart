@@ -67,7 +67,7 @@ class GetStarted3 extends StatelessWidget {
             left: 0,
             right: 0,
             child: Center(
-              child: Container(
+              child: SizedBox(
                 width: 200.0,
                 height: 60.0,
                   child: ElevatedButton(

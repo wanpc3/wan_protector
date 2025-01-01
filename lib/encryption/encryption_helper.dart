@@ -1,5 +1,4 @@
 import 'package:encrypt/encrypt.dart' as encrypt;
-import 'dart:convert';
 
 class EncryptionHelper {
   static final _key = encrypt.Key.fromUtf8('You_Wanna_h@ck+OurSystem?Really?'); // 32-char key

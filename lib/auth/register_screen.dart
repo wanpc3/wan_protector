@@ -1,5 +1,15 @@
 import 'package:flutter/material.dart';
 import '../get_started/get_started_3.dart';
+
+//Database connection
+import '../database/wp_database_helper.dart';
+import '../database/table_models/wp_user.dart';
+import '../database/table_models/master_pswd.dart';
+
+//Password Encryption
+import '../encryption/encryption_helper.dart';
+
+//Custom button
 import '../custom_btn/login_register_btn.dart';
 
 class RegisterScreen extends StatefulWidget{
@@ -16,6 +26,9 @@ class RegisterScreenState extends State<RegisterScreen> {
     final TextEditingController _master_passwordController = TextEditingController();
     final TextEditingController _confirm_master_passwordController = TextEditingController();
     
+    //Call database
+    final WPDatabaseHelper _wpDatabaseHelper = WPDatabaseHelper.instance;
+
     @override
     Widget build(BuildContext context) {
         return Scaffold(
@@ -112,7 +125,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                             if (value == null || value.isEmpty) {
                                 return 'Please Confirm your Master Password';
                             }
-                            if (_confirm_master_passwordController != _master_passwordController) {
+                            if (value != _master_passwordController.text) {
                                 return 'Master Password does not match';
                             }
                             return null;
@@ -125,22 +138,42 @@ class RegisterScreenState extends State<RegisterScreen> {
                     width: double.infinity,
                     height: 45.0,
                         child: ElevatedButton(
-                            style: registerButtonStyle,
-                            onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Registration Successful')),
+                          style: registerButtonStyle,
+                          onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                              //Encrypt the master password
+                              String encryptedPassword = EncryptionHelper.encryptText(_master_passwordController.text);
+
+                              //Insert user into the database
+                              WPUser user = WPUser(email: _emailController.text);
+                              int userId = await _wpDatabaseHelper.insertUser(user);
+
+                              if (userId != -1) {
+                                MasterPswd masterPassword = MasterPswd(
+                                  masterPswdText: encryptedPassword,
+                                  userNo: userId,
                                 );
-                                // Navigate to the other page
+                                await _wpDatabaseHelper.insertMasterPassword(masterPassword);
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Registration Successful')),
+                                );
+
+                                //Navigate to the next page
                                 Navigator.push(
-                                    context,
-                                MaterialPageRoute(
+                                  context,
+                                  MaterialPageRoute(
                                     builder: (context) => const GetStarted3(),
-                                    ),
-                                    );
-                                }
-                            },
-                            child: const Text('Submit'),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Error during registration')),
+                                );
+                              }
+                            }
+                          },
+                          child: const Text('Submit'),
                         ),
                     ),
                   ],

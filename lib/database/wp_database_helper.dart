@@ -1,6 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:wan_protector/database/table_models/master_pswd.dart';
+import 'table_models/master_pswd.dart';
 import 'table_models/wp_user.dart';
 
 class WPDatabaseHelper {
@@ -18,13 +18,26 @@ class WPDatabaseHelper {
     String databasesPath = await getDatabasesPath();
     String path = join(databasesPath, 'wan_protector.db');
 
-    return await openDatabase(path, version: 1, onCreate: _onCreate);
+    return await openDatabase(path, version: 2, onCreate: _onCreate, onUpgrade: _onUpgrade);
+  }
+
+  Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // Drop the old table and create a new one
+      await db.execute('DROP TABLE IF EXISTS wp_user');
+      await db.execute('''
+        CREATE TABLE wp_user (
+          user_no INTEGER PRIMARY KEY AUTOINCREMENT,
+          email VARCHAR(255) UNIQUE NOT NULL
+        )
+      ''');
+    }
   }
 
   Future _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE wp_user (
-        userNo INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_no INTEGER PRIMARY KEY AUTOINCREMENT,
         email VARCHAR(255) UNIQUE NOT NULL
       )
     ''');

@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:wan_protector/database/table_models/master_pswd.dart';
 import 'table_models/wp_user.dart';
 
 class WPDatabaseHelper {
@@ -24,12 +25,21 @@ class WPDatabaseHelper {
     await db.execute('''
       CREATE TABLE wp_user (
         userNo INTEGER PRIMARY KEY AUTOINCREMENT,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        username VARCHAR(255) UNIQUE NOT NULL
+        email VARCHAR(255) UNIQUE NOT NULL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE master_pswd (
+        master_pswd_no INTEGER PRIMARY KEY AUTOINCREMENT,
+        master_pswd_text TEXT NOT NULL,
+        user_no INTEGER NOT NULL,
+        FOREIGN KEY (user_no) REFERENCES wp_user (user_no)
       )
     ''');
   }
 
+  //Insert User information. Relation: one-to-one
   Future<int> insertUser(WPUser user) async {
     try {
       final db = await this.db;
@@ -40,10 +50,29 @@ class WPDatabaseHelper {
     }
   }
 
+  //Insert Master Password information. Relation: one-to-one
+  Future<int> insertMasterPassword(MasterPswd masterPswd) async {
+    try {
+      final db = await this.db;
+      return await db.insert('master_pswd', masterPswd.toMap());
+    } catch(e) {
+      print('Error inserting master password: $e');
+      return -1;
+    }
+  }
+
+  //User Retrieval
   Future<List<WPUser>> getAllUsers() async {
     final db = await this.db;
     final List<Map<String, dynamic>> result = await db.query('wp_user');
     return result.map((map) => WPUser.fromMap(map)).toList();
+  }
+
+  //Master Password Retrieval
+  Future<List<MasterPswd>> getMasterPasswords() async {
+    final db = await this.db;
+    final List<Map<String, dynamic>> result = await db.query('master_pswd');
+    return result.map((map) => MasterPswd.fromMap(map)).toList();
   }
 
   Future<void> close() async {

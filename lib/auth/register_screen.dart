@@ -12,7 +12,7 @@ class RegisterScreen extends StatefulWidget{
 class RegisterScreenState extends State<RegisterScreen> {
     final _formKey = GlobalKey<FormState>();
     final TextEditingController _emailController = TextEditingController();
-    final TextEditingController _usernameController = TextEditingController();
+    //final TextEditingController _usernameController = TextEditingController();
     final TextEditingController _master_passwordController = TextEditingController();
     final TextEditingController _confirm_master_passwordController = TextEditingController();
     
@@ -50,6 +50,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                 ),
 
                 //Username Input Row
+                /*
                 const SizedBox(height: 16),
                     TextFormField(
                     controller: _usernameController,
@@ -66,6 +67,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                         return null;
                     },
                 ),
+                */
 
                 //Master Password Input Row
                 const SizedBox(height: 16),

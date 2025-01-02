@@ -2,7 +2,7 @@ class Strings {
   //Description about the app
 
   //Starter Page
-  static const String welcome_to_wp = 'Welcome to WanProtector\nPassword Manager!';
+  static const String welcome_to_wp = 'Welcome to WanProtector Password Manager!';
   static const String welcome_1 = 'Passwords are sensitive information that must be securely protected to prevent unauthorized access or theft.';
   static const String tap_anywhere = 'Tap anywhere to begin';
 
@@ -20,4 +20,13 @@ class Strings {
   
   //About page
   static const String about_wan_protector = 'WanProtector Password manager is the first\npassword manager application developed by\nILHAN IDRISS. A computer science student\nwho is passionate about mobile application\nand cybersecurity fields.';
+
+  //Registration page:
+  //Remember master password
+  static const String remember_master_pswd = "Always remember your master password";
+
+  //Terms of Service
+  static const String agree_tos = "I agree with WanProtector's Terms of Service";
+  //Remind user to agree with it:
+  static const String agree_tos_warn = "You must agree to the Terms of Service";
 }

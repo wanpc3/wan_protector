@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'onboard_content.dart';
-import '../auth/register_screen.dart';
+import '../auth/register_user.dart';
 
 class GetStarted extends StatefulWidget {
   const GetStarted({super.key});
@@ -69,7 +69,7 @@ class _OnboardingScreenState extends State<GetStarted> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const RegisterScreen(),
+                        builder: (context) => const RegisterUser(),
                       ), 
                     );
                   }
@@ -84,7 +84,7 @@ class _OnboardingScreenState extends State<GetStarted> {
                 ),
                 child: Text(
                   (currentPage == demoData.length - 1
-                          ? "Finish"
+                          ? "Get Started"
                           : "Next")
                       .toUpperCase(),
                 ),

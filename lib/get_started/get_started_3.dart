@@ -3,7 +3,7 @@ import '../status_bar/status_bar.dart';
 import '../custom_btn/next_btn.dart';
 import '../strings/strings.dart';
 //import 'package:wan_protector/get_started/get_started_1.dart';
-import '../auth/register_screen.dart';
+import '../auth/register_user.dart';
 
 class GetStarted3 extends StatelessWidget {
   const GetStarted3({super.key});
@@ -76,7 +76,7 @@ class GetStarted3 extends StatelessWidget {
                       Navigator.push(
                         context,
                           MaterialPageRoute(
-                            builder: (context) => const RegisterScreen(),
+                            builder: (context) => const RegisterUser(),
                           ),
                       );
                     },

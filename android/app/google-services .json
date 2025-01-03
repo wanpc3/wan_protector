@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "997174263790",
+    "project_id": "wan-protector",
+    "storage_bucket": "wan-protector.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:997174263790:android:08091bdf4bbe2b2a40d8ff",
+        "android_client_info": {
+          "package_name": "com.wan_protector.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAs7kd1mbO_2PUM6yyzi6u8NGkCtsNb-E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

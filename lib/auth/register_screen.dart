@@ -63,16 +63,16 @@ class RegisterScreenState extends State<RegisterScreen> {
                         hintText: 'Enter your email',
                         border: OutlineInputBorder(),
                   ),
-                    //Email Validation
-                    validator: (value) {
-                    if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
-                    }
-                    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                        return 'Please enter a valid email';
-                    }
-                        return null;
-                    },
+                  //Email Validation
+                  validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your email';
+                  }
+                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                    return 'Please enter a valid email';
+                  }
+                    return null;
+                  },
                 ),
 
                 //Username Input Row

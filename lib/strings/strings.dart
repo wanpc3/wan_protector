@@ -29,4 +29,9 @@ class Strings {
   static const String agree_tos = "I agree with WanProtector's Terms of Service";
   //Remind user to agree with it:
   static const String agree_tos_warn = "You must agree to the Terms of Service";
+
+  //Verify user
+  static const String verify_title = "User Verification";
+  static const String verify_user = "Verify it's you who signed up";
+  static const String send_verify_code = "We have sent a 6-digit code to your email";
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../wan_protector/vault.dart';
+import '../smtp/verification_code.dart';
 
 const authOutlineInputBorder = OutlineInputBorder(
   borderSide: BorderSide(color: Colors.black),
@@ -17,25 +19,34 @@ class _VerifyCodeFormState extends State<VerifyCodeForm> {
   //Get the value of that number:
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _verification_code = TextEditingController();
+  String? _errorMessage;
 
-  @override
-  void dispose() {
-    _verification_code.dispose();
-    super.dispose();
-  }
+  Future<void> verifyCode() async {
+    //Retrieve the stored code
+    String? storedCode = await getSavedVerificationCode();
 
-  void _submitCode() {
-    if (_formKey.currentState?.validate() ?? false) {
-      //Handle valid code submission
-      final code = _verification_code.text;
+    if (_verification_code.text == storedCode) {
+      //Code matches
+      setState(() {
+        _errorMessage = null;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Code submitted: $code')),
+        const SnackBar(content: Text('Verification successful')),
+      );
+      
+      //Delete the code after successful verification
+      await deleteVerificationCode();
+    
+      //Navigate to the Vault screen
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const Vault()),
       );
     } else {
-      //Handle invalid input
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter the correct numbers')),
-      );
+      //Code does not match
+      setState(() {
+        _errorMessage = 'Invalid code. Please try again.';
+      });
     }
   }
 
@@ -45,30 +56,42 @@ class _VerifyCodeFormState extends State<VerifyCodeForm> {
       key: _formKey,
       child: Column(
         children: [
-              TextFormField(
-                controller: _verification_code,
-                decoration: const InputDecoration(
-                  hintText: 'Enter 6-digit code',
-                  border: authOutlineInputBorder,
-                ),
-                keyboardType: TextInputType.number, //Specifies the number keyboard
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly, //Allows digits only
-                ],
-                //Verification code validation
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter 6-digit code';
-                  }
-                  if (value.length != 6) {
-                    return 'The code must be exactly 6 digits';
-                  }
-                  return null;
-                }
+            TextFormField(
+              controller: _verification_code,
+              decoration: const InputDecoration(
+                hintText: 'Enter 6-digit code',
+                border: authOutlineInputBorder,
               ),
+              keyboardType: TextInputType.number, //Specifies the number keyboard
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly, //Allows digits only
+              ],
+              //Verification code validation
+              validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter 6-digit code';
+              }
+              if (value.length != 6) {
+                return 'The code must be exactly 6 digits';
+              }
+              return null;
+            }
+          ),
+          if (_errorMessage != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Text(
+                _errorMessage!,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
           const SizedBox(height: 24),
           ElevatedButton(
-            onPressed: _submitCode,
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                verifyCode();
+              }
+            },
             style: ElevatedButton.styleFrom(
               elevation: 0,
               backgroundColor: Color.fromARGB(255, 6, 84, 101),

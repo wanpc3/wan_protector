@@ -42,6 +42,10 @@ dependencies:
   #SMTP: Simple Mail Transfer Protocol
   mailer: ^6.3.0
 
+  #Secure Storage
+  #flutter_secure_storage: ^9.2.3
+  shared_preferences: ^2.3.5
+
   #Database
   sqflite: ^2.4.1
   sqflite_common_ffi: ^2.3.0

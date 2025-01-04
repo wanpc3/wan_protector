@@ -15,6 +15,9 @@ void sendEmail(String userEmail) async {
   //Generate the verification code
   String verification_code = generateVerificationCode();
 
+  //Save the verification code
+  await saveVerificationCode(verification_code);
+
   //Create the message.
   final message = Message()
   ..from = Address(username, 'ILHAN IDRISS')

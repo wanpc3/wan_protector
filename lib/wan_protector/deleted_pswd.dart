@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class Categories extends StatelessWidget {
-  const Categories({
+class DeletedPswd extends StatelessWidget {
+  const DeletedPswd({
     super.key
   });
 
@@ -13,9 +13,9 @@ class Categories extends StatelessWidget {
         itemBuilder: (context, index) {
           return ListTile(
             leading: const Icon(Icons.home),
-            title: Text('Category ${index + 1}'),
+            title: Text('Deleted Password ${index + 1}'),
             onTap: () {
-              print('Category ${index + 1} tapped');
+              print('Deleted Password ${index + 1} tapped');
             },
           );
         }

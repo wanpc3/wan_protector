@@ -63,9 +63,9 @@ class RegisterUserState extends State<RegisterUser> {
                TextFormField(
                  controller: _emailController,
                  decoration: const InputDecoration(
-                        labelText: 'Email',
-                        hintText: 'Enter your email',
-                        border: OutlineInputBorder(),
+                    labelText: 'Email',
+                    hintText: 'Enter your email',
+                    border: OutlineInputBorder(),
                   ),
                   //Email Validation
                   validator: (value) {

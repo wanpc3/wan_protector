@@ -1,115 +1,221 @@
 import 'package:flutter/material.dart';
-import '../custom_btn/fab.dart';
-import 'categories.dart';
+import 'package:wan_protector/custom_btn/login_register_btn.dart';
+import 'package:wan_protector/database/wp_database_helper.dart';
+import 'package:wan_protector/encryption/encryption_helper.dart';
 
-class Vault extends StatefulWidget {
+//Import tables
+import '../database/table_models/acc_entry.dart';
+import '../database/table_models/user_pswd.dart';
+
+class Vault extends StatelessWidget {
   const Vault({
     super.key
   });
 
   @override
-  State<Vault> createState() => _VaultState();
+  Widget build(BuildContext context) {
+    return Center(
+      child: ListView.builder(
+        itemCount: 5,
+        itemBuilder: (context, index) {
+          return ListTile(
+            leading: const Icon(Icons.home),
+            title: Text('Entry ${index + 1}'),
+            onTap: () {
+              print('Entry ${index + 1} tapped');
+            },
+          );
+        }
+      ),
+    );
+  }
 }
 
-class _VaultState extends State<Vault> {
-  int _selectedIndex = 0;
-  static const TextStyle optionStyle = 
-    TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Vault',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 1: All Categories',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 2: Deleted Passwords',
-      style: optionStyle,
-    ),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+class AddEntryForm extends StatefulWidget {
+  const AddEntryForm({
+    super.key
+  });
 
   @override
-  Widget build(BuildContext context) {
+  AddEntryFormState createState() => AddEntryFormState();
+}
+
+class AddEntryFormState extends State<AddEntryForm> {
+
+  //Create global key
+  final _formKey = GlobalKey<FormState>();
+
+  final TextEditingController _title = TextEditingController();
+  final TextEditingController _username = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  final TextEditingController _acc_url = TextEditingController();
+  final TextEditingController _notes = TextEditingController();
+
+  //Password visibility:
+  bool _isPasswordVisible = false;
+
+  //Call database
+  final WPDatabaseHelper _wpDatabaseHelper = WPDatabaseHelper.instance;
+
+  @override build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('WanProtector'),
-        leading: Builder(
-          builder: (context) {
-            return IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              }
-            );
-          },
-        ),
+        title: const Text('Add Entry'),
       ),
-      body: Center(
-        child: _widgetOptions[_selectedIndex],
-      ),
-
-      //Navigation Drawer
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              //Title input row
+              TextFormField(
+                controller: _title,
+                decoration: const InputDecoration(
+                  labelText: 'Title',
+                  hintText: 'Enter title',
+                  border: OutlineInputBorder(),
+                ),
+                //Form validation
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Title cannot be empty';
+                  }
+                  return null;
+                }
               ),
-              child: Text('Drawer Header'),
-            ),
 
-            ListTile(
-              title: const Text('Vault'),
-              selected: _selectedIndex == 0,
-              onTap: () {
-                //Update the state of the app
-                _onItemTapped(0);
-                //Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
+              const SizedBox(height: 16), //It's like the gap between textboxes
+              //Username input row
+              TextFormField(
+                controller: _username,
+                decoration: const InputDecoration(
+                  labelText: 'Username / Email',
+                  hintText: 'Enter username',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Username / Email cannot be empty';
+                  }
+                  return null;
+                }
+              ),
 
-            ListTile(
-              title: const Text('All Categories'),
-              selected: _selectedIndex == 1,
-              onTap: () {
-                _onItemTapped(1);
-                Navigator.pop(context);
-              },
-            ),
+              //Password input row
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _password,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  hintText: 'Enter password',
+                  border: OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    }
+                  ),
+                ),
+                obscureText: !_isPasswordVisible, //Hides password
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Password cannot be empty';
+                  }
+                  return null;
+                },
+              ),
 
-            ListTile(
-              title: const Text('Deleted Passwords'),
-              selected: _selectedIndex == 2,
-              onTap: () {
-                //Update the state of the app
-                _onItemTapped(2);
-                //Then close the drawer
-                Navigator.pop(context);
-              },
-            ),
+              const SizedBox(height: 16),
+              //URL input row
+              TextFormField(
+                controller: _acc_url,
+                decoration: const InputDecoration(
+                  labelText: 'URL',
+                  hintText: 'Enter URL',
+                  border: OutlineInputBorder(),
+                ),
+                //No validation because it's optional
+              ),
 
-          ],
+              const SizedBox(height: 16),
+              //Notes input row
+              TextFormField(
+                controller: _notes,
+                decoration: const InputDecoration(
+                  labelText: 'Notes',
+                  hintText: 'Add some notes',
+                  border: OutlineInputBorder(),
+                ),
+                //No validation because it's optional
+              ),
+
+              //Finally, add entry button
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 45.0,
+                child: ElevatedButton(
+                  style: registerButtonStyle, //After this, create custom button for add entry
+                  onPressed: () async {
+
+                    //Validation order:
+                    //Step 1: Make sure all row title, username/email, and passwords are inserted
+                    if (!_formKey.currentState!.validate()) {
+                      return;
+                    }
+
+                    //Step 2: Encrypt the password (This is very important):
+                    String encryptedPassword = EncryptionHelper.encryptText(_password.text);
+
+                    try {
+                      //Step 3: Insert account entry into the database
+                      AccEntry accEntry = AccEntry(
+                        accTitle: _title.text,
+                        accUsername: _username.text,
+                        accUrl: _acc_url.text.isEmpty ? null : _acc_url.text,
+                        addNotes: _notes.text.isEmpty ? null : _notes.text,
+                      );
+
+                      int entryId = await _wpDatabaseHelper.insertAccEntry(accEntry);
+
+                      //Step 4: Insert encrypted password linked to the entry
+                      if (entryId != -1) {
+                        UserPswd userPswd = UserPswd(
+                          userPswdText: encryptedPassword,
+                          entryNoRef: entryId,
+                        );
+
+                        int pswdId = await _wpDatabaseHelper.insert('user_pswd', userPswd.toMap());
+                        if (pswdId != -1) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Entry added successfully!')),
+                          );
+                          Navigator.pop(context);
+                        } else {
+                          throw Exception('Failed to insert user password.');
+                        }
+                      } else {
+                        throw Exception('Failed to insert account entry.');
+                      }
+                    } catch (e) {
+                      print('Error: $e');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Failed to insert account entry.')),
+                      );
+                    }
+                  },
+                  child: const Text('Add Entry'),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-      //FAB is here
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          //Define action here (e.g., navigate to a new screen or open a dialog)
-          print('FAB Pressed');
-        },
-        tooltip: 'Add',
-        child: const Icon(Icons.add),
       ),
     );
   }

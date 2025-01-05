@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../wan_protector/vault.dart';
+import '../wan_protector/wan_protector.dart';
 import '../smtp/verification_code.dart';
 
 const authOutlineInputBorder = OutlineInputBorder(
@@ -40,7 +40,7 @@ class _VerifyCodeFormState extends State<VerifyCodeForm> {
       //Navigate to the Vault screen
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const Vault()),
+        MaterialPageRoute(builder: (context) => const WanProtector()),
       );
     } else {
       //Code does not match

@@ -8,7 +8,7 @@ import 'firebase_options.dart';
 import 'get_started/get_started.dart';
 
 //Mainpage
-import 'wan_protector/vault.dart';
+import 'wan_protector/wan_protector.dart';
 
 void main() async {
 
@@ -35,12 +35,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'WanProtector Password Manager',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 0, 102, 255)),
         useMaterial3: true,
       ),
-      home: Vault(),
+      home: WanProtector(),
     );
   }
 }

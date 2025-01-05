@@ -34,4 +34,9 @@ class Strings {
   static const String verify_title = "User Verification";
   static const String verify_user = "Verify it's you who signed up";
   static const String send_verify_code = "We have sent a 6-digit code to your email";
+
+  //Navigation Drawer titles:
+  static const String vault_title = "Vault";
+  static const String categories_title = "Categories";
+  static const String deleted_pswd_title = "Deleted Passwords";
 }

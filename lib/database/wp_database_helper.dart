@@ -190,6 +190,23 @@ class WPDatabaseHelper {
     return masterPasswordResult.isNotEmpty;
   }
 
+  //Select entry by its primary key
+  Future<AccEntry?> fetchAccEntry(int entryNo) async {
+    final db =  await this.db;
+
+    final result = await db.query(
+      'acc_entry',
+      where: 'entry_no = ?',
+      whereArgs: [entryNo],
+    );
+
+    if (result.isNotEmpty) {
+      return AccEntry.fromMap(result.first);
+    }
+
+    return null;
+  } 
+
   Future<int> insert(String table, Map<String, dynamic> values) async {
     final db = await this.db;
     return await db.insert(table, values);

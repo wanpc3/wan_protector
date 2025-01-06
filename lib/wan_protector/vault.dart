@@ -6,6 +6,7 @@ import 'package:wan_protector/encryption/encryption_helper.dart';
 //Import tables
 import '../database/table_models/acc_entry.dart';
 import '../database/table_models/user_pswd.dart';
+import 'entry_details.dart';
 
 class Vault extends StatelessWidget {
   final ValueNotifier<int> reloadNotifier;
@@ -47,8 +48,23 @@ class Vault extends StatelessWidget {
                       ),
                       title: Text(entry.accTitle),
                       subtitle: Text(entry.accUsername),
-                      onTap: () {
-                        print('Entry ${entry.accTitle} tapped');
+                      onTap: () async {
+                        if (entry.entryNo != null) {
+                          final entryDetails = await WPDatabaseHelper.instance.fetchAccEntry(entry.entryNo!); 
+                        
+                          if (entryDetails != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EntryDetails(entry: entryDetails),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Entry not found!')),
+                            );
+                          }
+                        }
                       },
                     );
                   },
@@ -223,6 +239,7 @@ class AddEntryFormState extends State<AddEntryForm> {
                     try {
                       //Step 3: Insert account entry into the database
                       AccEntry accEntry = AccEntry(
+                        entryNo: null,
                         accTitle: _title.text,
                         accUsername: _username.text,
                         accUrl: _acc_url.text.isEmpty ? null : _acc_url.text,

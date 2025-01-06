@@ -21,13 +21,21 @@ class WanProtector extends StatefulWidget {
 class _WanProtectorState extends State<WanProtector> {
   int _selectedIndex = 0;
   
+  //Define ValueNotifier for auto-reloading Vault
+  final ValueNotifier<int> _reloadNotifier = ValueNotifier<int>(0);
+
   //Pages for navigation
-  final List<Widget> _pages = [
-    const Vault(),
-    const Categories(),
-    const DeletedPswd(),
-    const LoginUser(),
-  ];
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      Vault(reloadNotifier: _reloadNotifier),
+      const Categories(),
+      const DeletedPswd(),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -70,6 +78,7 @@ class _WanProtectorState extends State<WanProtector> {
 
             //Vault Page
             ListTile(
+              leading: const Icon(Icons.home, color: Colors.grey),
               title: const Text(Strings.vault_title),
               selected: _selectedIndex == 0,
               onTap: () {
@@ -80,6 +89,7 @@ class _WanProtectorState extends State<WanProtector> {
 
             //Categories Page
             ListTile(
+              leading: const Icon(Icons.category, color: Colors.grey),
               title: const Text(Strings.categories_title),
               selected: _selectedIndex == 1,
               onTap: () {
@@ -90,6 +100,7 @@ class _WanProtectorState extends State<WanProtector> {
 
             //Deleted Passwords Page
             ListTile(
+              leading: const Icon(Icons.restore_from_trash, color: Colors.grey),
               title: const Text(Strings.deleted_pswd_title),
               selected: _selectedIndex == 2,
               onTap: () {
@@ -100,11 +111,14 @@ class _WanProtectorState extends State<WanProtector> {
 
             //Login page
             ListTile(
-              title: const Text('Login page sample'),
+              leading: const Icon(Icons.logout_sharp, color: Colors.grey),
+              title: const Text('Logout'),
               selected: _selectedIndex == 3,
               onTap: () {
-                _onItemTapped(3);
-                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginUser())
+                );
               }
             ),
           ],
@@ -126,7 +140,13 @@ class _WanProtectorState extends State<WanProtector> {
             print('FAB Pressed on Vault');
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const AddEntryForm()),
+              MaterialPageRoute(
+                builder: (context) => AddEntryForm(
+                  onEntryAdded: () {
+                    _reloadNotifier.value++;
+                  },
+                ),
+              ),
             );
           },
           tooltip: 'Add Vault Entry',

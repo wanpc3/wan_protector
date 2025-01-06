@@ -8,32 +8,73 @@ import '../database/table_models/acc_entry.dart';
 import '../database/table_models/user_pswd.dart';
 
 class Vault extends StatelessWidget {
-  const Vault({
-    super.key
+  final ValueNotifier<int> reloadNotifier;
+  
+  Vault({
+    super.key,
+    required this.reloadNotifier
   });
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: ListView.builder(
-        itemCount: 5,
-        itemBuilder: (context, index) {
-          return ListTile(
-            leading: const Icon(Icons.home),
-            title: Text('Entry ${index + 1}'),
-            onTap: () {
-              print('Entry ${index + 1} tapped');
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Vault'),
+      ),
+      body: ValueListenableBuilder<int>(
+        valueListenable: reloadNotifier,
+        builder: (context, _, __) {
+          return FutureBuilder<List<AccEntry>>(
+            future: _fetchAccountEntries(), // Fetch data from database
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center (child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return const Center(child: Text('No entries found.'));
+              } else {
+                final entries = snapshot.data!;
+
+                return ListView.builder(
+                  itemCount: entries.length,
+                  itemBuilder: (context, index) {
+                    final entry = entries[index];
+                    return ListTile(
+                      leading: const Icon(
+                        Icons.key_sharp,
+                        color: Color.fromARGB(255, 255, 215, 0),
+                      ),
+                      title: Text(entry.accTitle),
+                      subtitle: Text(entry.accUsername),
+                      onTap: () {
+                        print('Entry ${entry.accTitle} tapped');
+                      },
+                    );
+                  },
+                );
+              }
             },
           );
         }
       ),
     );
   }
+
+   //Method to fetch account entries from the database
+  Future<List<AccEntry>> _fetchAccountEntries() async {
+    final db = WPDatabaseHelper.instance;
+    final data = await db.queryAll('acc_entry');
+    return data.map((entryData) => AccEntry.fromMap(entryData)).toList();
+  }
 }
 
 class AddEntryForm extends StatefulWidget {
+  final VoidCallback? onEntryAdded;
+
   const AddEntryForm({
-    super.key
+    super.key,
+    this.onEntryAdded,
   });
 
   @override
@@ -61,6 +102,12 @@ class AddEntryFormState extends State<AddEntryForm> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Entry'),
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -193,9 +240,11 @@ class AddEntryFormState extends State<AddEntryForm> {
 
                         int pswdId = await _wpDatabaseHelper.insert('user_pswd', userPswd.toMap());
                         if (pswdId != -1) {
+                          widget.onEntryAdded?.call();
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Entry added successfully!')),
                           );
+
                           Navigator.pop(context);
                         } else {
                           throw Exception('Failed to insert user password.');
@@ -218,5 +267,15 @@ class AddEntryFormState extends State<AddEntryForm> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _title.dispose();
+    _username.dispose();
+    _password.dispose();
+    _acc_url.dispose();
+    _notes.dispose();
+    super.dispose();
   }
 }

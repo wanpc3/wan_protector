@@ -96,7 +96,6 @@ class WPDatabaseHelper {
   ''');
 }
 
-
   Future<void> _createAccEntryTable(Database db) async {
     await db.execute('''
       CREATE TABLE acc_entry(

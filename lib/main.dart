@@ -10,6 +10,9 @@ import 'get_started/get_started.dart';
 //Mainpage
 import 'wan_protector/wan_protector.dart';
 
+//login page
+import 'auth/login_user.dart';
+
 void main() async {
 
   //Ensure Flutter binding is initialized before any async calls
@@ -40,7 +43,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 0, 102, 255)),
         useMaterial3: true,
       ),
-      home: GetStarted(),
+      home: LoginUser(),
     );
   }
 }

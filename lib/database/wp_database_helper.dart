@@ -180,8 +180,13 @@ class WPDatabaseHelper {
     //Check if the master password exist for the given user
     var masterPasswordResult = await db.rawQuery(
       "SELECT * FROM master_pswd WHERE user_no = ? AND master_pswd_text = ?",
-      [userNo, EncryptionHelper.encryptText(masterPswd.masterPswdText)]
+      //[userNo, EncryptionHelper.encryptText(masterPswd.masterPswdText)]
+      [userNo, masterPswd.masterPswdText]
     );
+
+    print("Stored Encrypted Master Password: ${masterPasswordResult.isNotEmpty ? masterPasswordResult.first['master_pswd_text'] : 'Not found'}");
+    //print("Input Encrypted Master Password: ${EncryptionHelper.encryptText(masterPswd.masterPswdText)}");
+    print("Input Encypted Master Password: ${masterPswd.masterPswdText}");
 
     return masterPasswordResult.isNotEmpty;
   }

@@ -8,6 +8,9 @@ import '../database/table_models/wp_user.dart';
 import '../database/table_models/master_pswd.dart';
 import '../wan_protector/vault.dart';
 
+//Page to access WanProtector password manager
+import '../wan_protector/wan_protector.dart';
+
 class LoginUser extends StatefulWidget {
   const LoginUser({super.key});
 
@@ -41,7 +44,7 @@ class _LoginUserState extends State<LoginUser> {
       if (!mounted)
         return;
       Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const Vault())
+        context, MaterialPageRoute(builder: (context) => const WanProtector())
       );
     } else {
       setState(() {

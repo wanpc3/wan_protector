@@ -7,6 +7,7 @@ import '../status_bar/status_bar.dart';
 import 'vault.dart';
 import 'categories.dart';
 import 'deleted_pswd.dart';
+import '../auth/login_user.dart';
 
 class WanProtector extends StatefulWidget {
   const WanProtector({
@@ -25,6 +26,7 @@ class _WanProtectorState extends State<WanProtector> {
     const Vault(),
     const Categories(),
     const DeletedPswd(),
+    const LoginUser(),
   ];
 
   void _onItemTapped(int index) {
@@ -94,6 +96,16 @@ class _WanProtectorState extends State<WanProtector> {
                 _onItemTapped(2);
                 Navigator.pop(context);
               },
+            ),
+
+            //Login page
+            ListTile(
+              title: const Text('Login page sample'),
+              selected: _selectedIndex == 3,
+              onTap: () {
+                _onItemTapped(3);
+                Navigator.pop(context);
+              }
             ),
           ],
         ),

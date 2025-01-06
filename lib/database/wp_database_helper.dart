@@ -5,6 +5,9 @@ import 'table_models/acc_entry.dart';
 import 'table_models/master_pswd.dart';
 import 'table_models/wp_user.dart';
 
+//Import encryption method
+import '../encryption/encryption_helper.dart';
+
 class WPDatabaseHelper {
 
   static const _database_name = 'wan_protector.db';
@@ -156,6 +159,31 @@ class WPDatabaseHelper {
     
     print('Account entry inserted: $result');
     return result;
+  }
+
+  //Login method
+  Future<bool> login(WPUser user, MasterPswd masterPswd) async {
+    final db = await this.db;
+
+    //Check if the email exists in the wp_user table
+    var emailResult = await db.rawQuery(
+      "SELECT * FROM wp_user WHERE email = ?", [user.email]
+    );
+
+    if (emailResult.isEmpty) {
+      return false;
+    }
+
+    //Get user_no from the result
+    int userNo = emailResult.first['user_no'] as int;
+
+    //Check if the master password exist for the given user
+    var masterPasswordResult = await db.rawQuery(
+      "SELECT * FROM master_pswd WHERE user_no = ? AND master_pswd_text = ?",
+      [userNo, EncryptionHelper.encryptText(masterPswd.masterPswdText)]
+    );
+
+    return masterPasswordResult.isNotEmpty;
   }
 
   Future<int> insert(String table, Map<String, dynamic> values) async {

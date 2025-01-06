@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 0, 102, 255)),
         useMaterial3: true,
       ),
-      home: WanProtector(),
+      home: GetStarted(),
     );
   }
 }

@@ -36,15 +36,15 @@ dependencies:
   cupertino_icons: ^1.0.8
   
   #Firebase
-  firebase_core: ^3.9.0
-  firebase_auth: ^5.3.4
+  firebase_core: ^3.10.1
+  firebase_auth: ^5.4.1
+  cloud_firestore: ^5.6.2
 
   #SMTP: Simple Mail Transfer Protocol
   mailer: ^6.3.0
 
   #Secure Storage
-  #flutter_secure_storage: ^9.2.3
-  shared_preferences: ^2.3.5
+  flutter_secure_storage: ^9.2.4
 
   #Database
   sqflite: ^2.4.1
@@ -57,6 +57,15 @@ dependencies:
   #Add path_provider
   path_provider: ^2.1.5
 
+  #Add link to text
+  link_text: ^0.2.1
+
+  #Adaptive theme
+  adaptive_theme: ^3.7.0
+
+  #lottie for animation
+  lottie: ^3.3.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -67,12 +76,20 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.3
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/wp_app_icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
 flutter:
+  assets: #Animation
+    - assets/send_email_anim.json
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

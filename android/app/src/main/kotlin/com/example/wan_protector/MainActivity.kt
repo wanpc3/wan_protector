@@ -1,4 +1,4 @@
-package com.example.wan_protector
+package com.wan_protector.app.ui
 
 import io.flutter.embedding.android.FlutterActivity
 

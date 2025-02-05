@@ -1,17 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:wan_protector/auth/custom_checkbox.dart';
 import 'package:wan_protector/auth/verify_user.dart';
+import 'package:wan_protector/database/collect_wp_user.dart';
+import 'package:wan_protector/get_started/get_started.dart';
 import 'package:wan_protector/smtp/send_email.dart';
+import '../auth/login_user.dart';
 
 //Show text
 import '../strings/strings.dart';
 
 //Firebase connection
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 //Database connection
 import '../database/wp_database_helper.dart';
-import '../database/table_models/wp_user.dart';
+import '../database/table_models/newsletter_subscriber.dart';
 import '../database/table_models/master_pswd.dart';
 
 //Password Encryption
@@ -43,23 +48,33 @@ class RegisterUserState extends State<RegisterUser> {
     //Terms of Service agreement:
     bool _isAgreedToTOS = false;
 
+    //Newsletter subscription
+    bool _isSubsNewsLetter = false;
+    bool _isChecked = false;
+
     //Call database
     final WPDatabaseHelper _wpDatabaseHelper = WPDatabaseHelper.instance;
 
     @override
     Widget build(BuildContext context) {
-        return Scaffold(
-            appBar: AppBar(
-                title: const Text('User Registration Form'),
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            Strings.reg_form,
+            style: TextStyle(color: Colors.white)
+          ),
+          backgroundColor: Color.fromARGB(255, 6, 84, 101),
+          //iconTheme: IconThemeData(color: Colors.white),
         ),
         body: Padding(
          padding: const EdgeInsets.all(16.0),
          child: Form(
            key: _formKey,
-           child: Column(
-             crossAxisAlignment: CrossAxisAlignment.start,
+           child: ListView(
              children: [
+
                //Email Input Row
+               /*
                TextFormField(
                  controller: _emailController,
                  decoration: const InputDecoration(
@@ -78,6 +93,7 @@ class RegisterUserState extends State<RegisterUser> {
                     return null;
                   },
                 ),
+                */
 
                 //Master Password Input Row
                 const SizedBox(height: 16),                    
@@ -148,8 +164,56 @@ class RegisterUserState extends State<RegisterUser> {
                 style: TextStyle(color: Colors.red),
               ),
 
-              //Terms of Service agreement:
-              const SizedBox(height: 16),
+              const SizedBox(height: 15),
+
+              // Newsletter subscription:
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomCheckbox(
+                    value: _isSubsNewsLetter,
+                    onChanged: (value) {
+                      setState(() {
+                        _isSubsNewsLetter = value!;
+                        _isChecked = value;
+                      });
+                    },
+                  ),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 4),
+                        Text(Strings.newsltr),
+                        if (_isChecked) // Show only when checked
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: TextFormField(
+                              controller: _emailController,
+                              decoration: InputDecoration(
+                                labelText: 'Email',
+                                hintText: 'Enter your email',
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your email';
+                                }
+                                if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                                  return 'Please enter a valid email';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              
+              //Terms of Service agreement: (This is highly necessary)
+              //const SizedBox(height: 16),
               Row(
                 children: [
                   CustomCheckbox(
@@ -160,11 +224,62 @@ class RegisterUserState extends State<RegisterUser> {
                       });
                     },
                   ),
-                  const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
-                      Strings.agree_tos,
-                      style: const TextStyle(color: Colors.black),
+                    child: RichText(
+                      text: TextSpan(
+                        text: Strings.agree,
+                        style: const TextStyle(color: Colors.black),
+                        children: [
+
+                          //Terms of Service
+                          TextSpan(
+                            text: Strings.tos,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              decoration: TextDecoration.underline,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(builder: (context) => GetStarted()),
+                              // );
+                            }
+                          ),
+
+                          //and
+                          TextSpan(
+                            text: ' and ',
+                            style: const TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
+
+                          //Privacy Policy
+                          TextSpan(
+                            text: Strings.privacy_policy,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              decoration: TextDecoration.underline,
+                            ),
+                            recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(builder: (context) => GetStarted()),
+                              // );
+                            }
+                          ),
+
+                          //Full stop
+                          TextSpan(
+                            text: '.',
+                            style: const TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -198,52 +313,54 @@ class RegisterUserState extends State<RegisterUser> {
                     String encryptedPassword = EncryptionHelper.encryptText(_master_passwordController.text);
 
                       try {
-                        //Register user in Firebase
-                        //UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
-                        //  email: _emailController.text,
-                        //  password: _master_passwordController.text,
-                        //);
 
-                        //Insert user into the database
-                        WPUser user = WPUser(email: _emailController.text);
-                        int userId = await _wpDatabaseHelper.insertUser(user);
+                        //Insert master password to db
+                        MasterPswd masterPassword = MasterPswd(
+                          masterPswdText: encryptedPassword,
+                        );
+                        await _wpDatabaseHelper.insertMasterPassword(masterPassword);
 
-                        if (userId != -1) {
-                          MasterPswd masterPassword = MasterPswd(
-                            masterPswdText: encryptedPassword,
-                            userNo: userId,
+                        //If user want to receive newsletter from WanProtector:
+                        if (_emailController.text.trim().isNotEmpty) {
+                          //Get the email form data
+                          final String email = _emailController.text.trim();
+                          final bool isSubscribed = _isSubsNewsLetter;
+                          final String newsletter = isSubscribed ? 'subscribed' : 'not_subscribed';
+
+                          //Insert user into the database locally
+                          NewsLetter_Subscriber newsSubscriber = NewsLetter_Subscriber(
+                            email: email,
+                            newsletter: newsletter,
+                            created_at: Timestamp.now(),
                           );
-                          await _wpDatabaseHelper.insertMasterPassword(masterPassword);
 
-                          //Send email verification
-                          //await userCredential.user?.sendEmailVerification();
+                          // Save to Firestore
+                          final collectWPUser = CollectWPUser();
+                          await collectWPUser.addNewsLetter_Subscriber(newsSubscriber);
+
+                          //  Tell user that they have subscribed to WanProtector's newsletter
                           sendEmail(_emailController.text);
+                        }
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Registration Successful')),
-                          );
-
-                          //Navigate to the next page
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const VerifyUser(),
-                            ),
-                          );
-                        } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Error during registration')),
-                            );
-                          }
+                        //Navigate to the next page
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LoginUser(),//VerifyUser(email: _emailController.text),
+                          ),
+                        );
                       } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Registration failed: ${e.toString()}')),
                         );
                       }
                     },
-                    child: const Text('Submit'),
+                    child: const Text('Register'),
                     ),
                   ),
+
+                  //Gap at the bottom
+                  const SizedBox(height: 16),
                 ],
               ),
             ),

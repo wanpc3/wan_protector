@@ -2,12 +2,19 @@ import 'package:flutter/material.dart';
 import '../custom_btn/fab.dart';
 import '../strings/strings.dart';
 import '../status_bar/status_bar.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 //Import dart files
 import 'vault.dart';
+import 'add_entry.dart';
 import 'categories.dart';
 import 'deleted_pswd.dart';
+import '../settings/settings.dart';
 import '../auth/login_user.dart';
+import '../auth/login_status.dart';
+
+// Import database
+import '../database/wp_database_helper.dart';
 
 class WanProtector extends StatefulWidget {
   const WanProtector({
@@ -19,7 +26,18 @@ class WanProtector extends StatefulWidget {
 }
 
 class _WanProtectorState extends State<WanProtector> {
+
+  final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
+
   int _selectedIndex = 0;
+
+  // Titles for the AppBar
+  final List<String> _titles = [
+    Strings.vault_title,
+    Strings.categories_title,
+    Strings.deleted_pswd_title,
+    Strings.settings_title
+  ];
   
   //Define ValueNotifier for auto-reloading Vault
   final ValueNotifier<int> _reloadNotifier = ValueNotifier<int>(0);
@@ -34,7 +52,14 @@ class _WanProtectorState extends State<WanProtector> {
       Vault(reloadNotifier: _reloadNotifier),
       const Categories(),
       const DeletedPswd(),
+      const Settings(),
     ];
+    _checkLoginStatus();
+  }
+
+  // Call the checkLoginStatus function from the helper file
+  _checkLoginStatus() {
+    checkLoginStatus(context); // Use the function from the imported file
   }
 
   void _onItemTapped(int index) {
@@ -51,9 +76,9 @@ class _WanProtectorState extends State<WanProtector> {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'WanProtector',
-          style: TextStyle(color: Colors.white), //Set title color to white
+        title: Text(
+          _titles[_selectedIndex],
+          style: const TextStyle(color: Colors.white), //Set title color to white
         ),
         backgroundColor: Color.fromARGB(255, 6, 84, 101),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -72,8 +97,9 @@ class _WanProtectorState extends State<WanProtector> {
               decoration: BoxDecoration(
                 color: Color.fromARGB(255, 6, 84, 101),
               ),
-              child: Text('WanProtector',
-              style: TextStyle(color: Colors.white, fontSize: 20),),
+              child: Text(
+                'WanProtector',
+                style: TextStyle(color: Colors.white, fontSize: 20),),
             ),
 
             //Vault Page
@@ -109,16 +135,24 @@ class _WanProtectorState extends State<WanProtector> {
               },
             ),
 
-            //Login page
+            //Settings page
+            ListTile(
+              leading: const Icon(Icons.settings, color: Colors.grey),
+              title: const Text(Strings.settings_title),
+              selected: _selectedIndex == 3,
+              onTap: () {
+                _onItemTapped(3);
+                Navigator.pop(context);
+              },
+            ),
+
+            //Logout page
             ListTile(
               leading: const Icon(Icons.logout_sharp, color: Colors.grey),
               title: const Text('Logout'),
-              selected: _selectedIndex == 3,
+              selected: _selectedIndex == 4,
               onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginUser())
-                );
+                _logout();
               }
             ),
           ],
@@ -170,8 +204,27 @@ class _WanProtectorState extends State<WanProtector> {
           tooltip: 'Restore Password',
           child: const Icon(Icons.restore),
         );
+
+      case 3: //Settings Page
+        return FloatingActionButton(
+          onPressed: () {
+            print('FAB Pressed on Settings');
+          },
+          tooltip: 'Settings',
+          child: const Icon(Icons.settings),
+        );
+        
       default:
         return Container(); //No FAB for other pages if necessary
     }
+  }
+
+  void _logout() async {
+    await _secureStorage.delete(key: 'isLoggedIn');
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginUser())
+    );
   }
 }

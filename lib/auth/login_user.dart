@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:wan_protector/custom_btn/login_register_btn.dart';
 import 'package:wan_protector/database/wp_database_helper.dart';
 import 'package:wan_protector/encryption/encryption_helper.dart';
-
-//Import tables
-import '../database/table_models/wp_user.dart';
-import '../database/table_models/master_pswd.dart';
-import '../wan_protector/vault.dart';
+import '../strings/strings.dart';
 
 //Page to access WanProtector password manager
 import '../wan_protector/wan_protector.dart';
@@ -21,28 +18,39 @@ class LoginUser extends StatefulWidget {
 class _LoginUserState extends State<LoginUser> {
   
   //Variable delarations
-  final email = TextEditingController();
   final master_pswd = TextEditingController();
-
-  //Passwords visibility
   bool isVisible = false;
-
-  //Here is our bool variable
   bool isLoginTrue = false;
+  bool _isLoading = false;
 
   //Call database
   final WPDatabaseHelper _wpDatabaseHelper = WPDatabaseHelper.instance;
+  final formKey = GlobalKey<FormState>();
+
+  // Create an instance of FlutterSecureStorage
+  final FlutterSecureStorage _secureStorage = FlutterSecureStorage();
 
   //Call this function once the submit button is pressed
   login() async {
-    WPUser user = WPUser(email: email.text);
-    MasterPswd masterPswd = MasterPswd(masterPswdText: master_pswd.text, userNo: 1);
+    
+    if (_isLoading) return;
 
-    bool isLoginValid = await _wpDatabaseHelper.login(user, masterPswd);
+    setState(() {
+      _isLoading = true;
+      isLoginTrue = false;
+    });
+
+    // Encrypt user input before checking with database
+    String encryptedInputPassword = EncryptionHelper.encryptText(master_pswd.text);
+
+    bool isLoginValid = await _wpDatabaseHelper.login(encryptedInputPassword);
 
     if (isLoginValid) {
-      if (!mounted)
-        return;
+
+      // Store the login state securely
+      await _secureStorage.write(key: 'isLoggedIn', value: 'true');
+
+      if (!mounted) return;
       Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => const WanProtector())
       );
@@ -51,38 +59,28 @@ class _LoginUserState extends State<LoginUser> {
         isLoginTrue = true;
       });
     }
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
-  final formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          Strings.login_title,
+          style: TextStyle(color: Colors.white)
+        ),
+        backgroundColor: Color.fromARGB(255, 6, 84, 101),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: [
-              //Email input row:
-              TextFormField(
-                controller: email,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'Enter email',
-                  border: OutlineInputBorder(),
-                ),
-                //Email validation
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
-                  }
-                  if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                    return 'Please enter a valid email';
-                  }
-                  return null;
-                },
-              ),
 
               //Master Password Input Row
               const SizedBox(height: 16),
@@ -120,14 +118,28 @@ class _LoginUserState extends State<LoginUser> {
                 height: 45.0,
                 child: ElevatedButton(
                   style: registerButtonStyle,
-                  onPressed: () {
+                  onPressed: _isLoading
+                    ? null // Disable button while loading
+                    : () {
                     if (formKey.currentState?.validate() ?? false) {
                       login();
                     }
                   },
-                  child: const Text('Submit'),
+              child: _isLoading
+                  ? CircularProgressIndicator(color: Colors.white)
+                  : const Text('Submit'),
                 ),
               ),
+
+              // Show error message if login fails
+              if (isLoginTrue)
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(
+                    'Incorrect master password. Try again.',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
             ],
           ),
         ),
